@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <style>
+        .animate {
+            animation: anim 10s infinite;
+        }
+
+        @keyframes anim {
+            0% {
+                transform: rotate(-45deg);
+            }
+
+            50% {
+                transform: rotate(60deg);
+            }
+
+            70% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(-45deg);
+            }
+        }
+    </style>
+
+    <div class="h-screen grid grid-cols-1 md:grid-cols-[400px_1fr]">
+        <div class="h-full bg-blue-500 text-white flex flex-col justify-center items-center">
+            <img class="mx-auto animate" src="{% static 'images/milk.png' %}" alt="Milk image">
+            <img src="{% static 'images/logo.png' %}" alt="Logo" class="mt-8" width="200">
+            <p class="text-center text-sm my-2 px-2">We deliver pure and organic milk right <br> at your doorsteps.</p>
+            <p class="text-center my-2">Nepal's no:1 milk distributing startup</p>
+            <p class="tet-center my-2"><i class="fa-brands fa-whatsapp"></i> <b>9816007781</b></p>
+        </div>
+
+        <div class="bg-white h-full p-8">
+            <div>
+                <h1 class="my-2 font-medium text-lg">Choose your type</h1>
+
+                <div class="flex gap-8 max-w-[600px] mt-8">
+                    <a href="{% url 'producer'%}"
+                       class="flex text-center font-medium text-black border-2 border-blue-500 hover:bg-blue-100 px-4 py-2 rounded-lg w-full">
+                        <img src="{% static 'images/farmer.png' %}" width="18" height="18" class="mx-4"> Producer
+                    </a>
+
+                    <a href=""
+                       class="flex text-center font-medium px-4 py-2 border-2 border-blue-500 rounded-lg hover:bg-blue-100 w-full">
+                        <img src="{% static 'images/buyer.png' %}" width="18" height="18" class="mx-4"> Consumer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
