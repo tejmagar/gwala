@@ -109,6 +109,7 @@ class ProducerView(View):
 
             else:
                 model.save()
+                # Form submitted successfully, so redirect to success message page
                 return redirect(request.path)
 
         addresses = create_address_json()

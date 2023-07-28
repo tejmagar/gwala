@@ -39,7 +39,8 @@
                                        class="w-full block mx-auto px-2 py-2 rounded"
                                         {% if form.litre_to_sell.value %}
                                        value="{{ form.litre_to_sell.value }}"
-                                        {% endif %}>
+                                        {% endif %}
+                                       required>
 
                                 {% if form.errors.litre_to_sell %}
                                     <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.litre_to_sell }}</span>
@@ -135,7 +136,7 @@
                                    placeholder="Google Maps Location URL"
                                    class="block w-full mx-auto px-2 py-2 rounded"
                                     {% if form.google_map_location.value %}
-                                        value="{{ form.google_map_location.value }}"
+                                   value="{{ form.google_map_location.value }}"
                                     {% endif %}>
                             {% if form.errors.google_map_location %}
                                 <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.google_map_location }}</span>
