@@ -37,29 +37,31 @@ class Animal(models.Model):
         return self.name
 
 
-class AnimalType(models.Model):
-    name = models.CharField(max_length=100)
-    animal = models.ForeignKey(to=Animal, on_delete=models.DO_NOTHING)
-
-    def __str__(self):
-        return f'{self.animal} - {self.name}'
-
-
 class Status(models.TextChoices):
+    NONE = 'none'  # User filled half form but not completed yet
     PENDING = 'pending'
     ACCEPTED = 'accepted'
     REJECTED = 'rejected'
 
 
 class Producer(models.Model):
-    name = models.CharField(max_length=60)
-    phone_number = models.CharField(max_length=10)
-    ward = models.ForeignKey(to=Ward, on_delete=models.DO_NOTHING)
+    # Primary fields
+    first_name = models.CharField(max_length=60)
+    last_name = models.CharField(max_length=60)
+    contact_number = models.CharField(max_length=10)
+    district = models.CharField(max_length=100)
+    local_body = models.CharField(max_length=100)
+    ward = models.IntegerField()
+    google_map_location = models.URLField(null=True, blank=True)
     house_photo = models.ImageField(upload_to='uploads/', null=True, blank=True)
-    milk_source = models.ForeignKey(to=AnimalType, on_delete=models.DO_NOTHING)
-    litre_to_sell = models.IntegerField()
-    rate_per_litre = models.IntegerField(help_text='In rupees')
-    status = models.CharField(max_length=60, choices=Status.choices, default=Status.PENDING)
+
+    # Additional fields
+    milk_source = models.ForeignKey(to=Animal, on_delete=models.DO_NOTHING, null=True, blank=True)
+    litre_to_sell = models.IntegerField(null=True, blank=True)
+    rate_per_litre = models.IntegerField(help_text='In rupees', null=True, blank=True)
+
+    # Status
+    status = models.CharField(max_length=60, choices=Status.choices, default=Status.NONE)
 
     def __str__(self):
-        return self.name
+        return f'{self.first_name} {self.last_name}'

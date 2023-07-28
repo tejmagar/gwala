@@ -6,57 +6,152 @@
     <style>
         select {
             border-right: 12px solid transparent; /* fixed dropdown right arrow padding */
+            border-radius: 8px;
+            border-left: 8px solid transparent;
         }
     </style>
-
-    <script src="https://unpkg.com/vue@next"></script>
 {% endblock %}
 
 {% block content %}
-    <div class="grid items-center justify-center h-screen" id="app">
+    <div class="grid items-center justify-center h-screen">
         <div class="p-4 rounded-xl text-sm">
-            <form action="" class="min-w-[360px] flex bg-blue-100 items-center rounded-xl p-8">
+            <form action="" class="min-w-[360px] flex bg-blue-100 items-center rounded-xl p-8" method="POST">
+                {% csrf_token %}
+
                 <div class="w-1/2">
-                    <img src="{% static 'images/milking-man.webp' %}">
+                    <img alt="Milking man" src="{% static 'images/milking-man.webp' %}">
                 </div>
+
                 <div class="w-1/2 bg-gray-50 p-8 rounded-xl">
-                    <h1 class="font-medium mb-4">Fill the form</h1>
-                    <div class="flex gap-4">
-                        <input type="text" placeholder="First Name" class="block mb-4 w-1/2 mx-auto px-2 py-2 rounded">
-                        <input type="text" placeholder="Last Name" class="block mb-4 w-1/2 mx-auto px-2 py-2 rounded">
-                    </div>
+                    {% if request.GET.next_form %}
+                        <h1 class="underline font-medium underline-offset-4">Additional information</h1>
 
-                    <input type="text" placeholder="Contact number"
-                           class="block mb-4 mt-2 w-full mx-auto px-2 py-2 rounded">
-
-                    <span class="text-slate-500 block mt-8">Address</span>
-
-                    <div class="mb-4 flex gap-6">
-                        <div class="my-2">
-                            <select id="district" class="bg-white px-3 py-2 rounded-2xl" onchange="districtChanged()">
-                            </select>
-                        </div>
-                        <div class="my-2">
-                            <select id="localBody" class="bg-white px-3 py-2 rounded-2xl" onchange="localBodyChanged()">
-                            </select>
-                        </div>
-                        <div class="my-2">
-                            <select id="ward" class="bg-white px-3 py-2 rounded-2xl" onchange="">
-                            </select>
+                        <div class="flex gap-4 mt-8">
+                            <label>Milk source</label>
+                            {{ form.milk_source }}
                         </div>
 
-                    </div>
-                    <input type="text" placeholder="Google Maps Location URL"
-                           class="block mb-8 w-full mx-auto px-2 py-2 rounded">
+                        <div class="mt-8">
+                            <label class="block">How much litre you want to sell?</label>
 
-                    <div>
-                        <label>House Image</label>
-                        <button class="ml-4 border border-dashed border-green-600 px-3 py-1 rounded-xl mb-3">Upload
-                        </button>
-                    </div>
+                            <div class="mt-2">
+                                <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="eg: 1"
+                                       class="w-full block mx-auto px-2 py-2 rounded"
+                                        {% if form.litre_to_sell.value %}
+                                       value="{{ form.litre_to_sell.value }}"
+                                        {% endif %}>
 
-                    <button type="submit" class="block ml-auto bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Submit
-                    </button>
+                                {% if form.errors.litre_to_sell %}
+                                    <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.litre_to_sell }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <label class="block">Rate per litre</label>
+                            <input name="rate_per_litre" aria-label="Rate" type="number" placeholder="eg: 1"
+                                   class="w-full mt-2 block mx-auto px-2 py-2 rounded"
+                                    {% if form.rate_per_litre.value %}
+                                   value="{{ form.rate_per_litre.value }}"
+                                    {% endif %}
+                                   required>
+
+                            {% if form.errors.rate_per_litre %}
+                                <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.rate_per_litre }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-right mt-8">
+                            <button type="submit" class="bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Submit</button>
+                        </div>
+                    {% else %}
+                        <h1 class="font-medium mb-4">Fill the form</h1>
+
+                        <div class="flex gap-4">
+                            <div class="w-1/2 mb-4">
+                                <input name="first_name" aria-label="firstName" type="text" placeholder="First Name"
+                                       class="block w-full mb-2 mx-auto px-2 py-2 rounded"
+                                        {% if form.first_name.value %}
+                                       value="{{ form.first_name.value }}"
+                                        {% endif %} required>
+
+                                {% if form.errors.first_name %}
+                                    <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.first_name }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="w-1/2">
+                                <input name="last_name" aria-label="lastName" type="text" placeholder="Last Name"
+                                       class="block w-full mb-2 mx-auto px-2 py-2 rounded"
+                                        {% if form.last_name.value %}
+                                       value="{{ form.last_name.value }}"
+                                        {% endif %}
+                                       required>
+
+                                {% if form.errors.last_name %}
+                                    <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.last_name }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <input name="contact_number" aria-label="contactNumber" type="text"
+                                   placeholder="Contact number"
+                                   class="block mb-2 mt-2 w-full mx-auto px-2 py-2 rounded"
+                                    {% if form.contact_number.value %}
+                                   value="{{ form.contact_number.value }}"
+                                    {% endif %}
+                                   required>
+                            {% if form.errors.contact_number %}
+                                <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.contact_number }}</span>
+                            {% endif %}
+                        </div>
+
+                        <span class="text-slate-500 block mt-8">Address</span>
+
+                        <div class="mb-4 flex gap-6">
+                            <div class="my-2">
+                                <select name="district" aria-label="district" id="district" required
+                                        class="bg-white px-3 py-2 rounded-2xl {% if form.errors.district %}outline outline-1 outline-red-500{% endif %}"
+                                        onchange="districtChanged()">
+                                </select>
+                            </div>
+                            <div class="my-2">
+                                <select name="local_body" aria-label="localBody" id="localBody" required
+                                        class="bg-white px-3 py-2 rounded-2xl {% if form.errors.local_body %}outline outline-1 outline-red-500{% endif %}"
+                                        onchange="localBodyChanged()">
+                                </select>
+                            </div>
+                            <div class="my-2">
+                                <select name="ward" aria-label="ward" id="ward" required
+                                        class="bg-white px-3 py-2 rounded-2xl {% if form.errors.ward %}outline outline-1 outline-red-500{% endif %}"
+                                        onchange="">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <input name="google_map_location" aria-label="googleMapLocation" type="text"
+                                   placeholder="Google Maps Location URL"
+                                   class="block w-full mx-auto px-2 py-2 rounded"
+                                    {% if form.google_map_location.value %}
+                                        value="{{ form.google_map_location.value }}"
+                                    {% endif %}>
+                            {% if form.errors.google_map_location %}
+                                <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.google_map_location }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label>House Image</label>
+                            <button class="ml-4 border border-dashed border-green-600 px-3 py-1 rounded-xl mb-3">Upload
+                            </button>
+                        </div>
+
+                        <div class="text-right">
+                            <button type="submit" class="bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Next</button>
+                        </div>
+                    {% endif %}
                 </div>
             </form>
         </div>
@@ -89,8 +184,6 @@
             // Replace inner html of current tag
             selectElement.innerHTML = html;
         }
-
-        addOptions(districtSelect, availableAddresses['districts'], 'name', 'District');
 
         function getItemById(items, id) {
             for (let i = 0; i < items.length; i++) {
@@ -144,7 +237,22 @@
             addOptions(wardSelect, wards, 'number', 'Ward');
         }
 
+        addOptions(districtSelect, availableAddresses['districts'], 'name', 'District');
         refreshLocalBodies();
         refreshWards();
+
+        {% if form.district.value %}
+            districtSelect.value = "{{ form.district.value }}";
+            districtChanged();
+        {% endif %}
+
+        {% if form.local_body.value %}
+            localBodySelect.value = "{{ form.local_body.value }}";
+            localBodyChanged();
+        {% endif %}
+
+        {% if form.ward.value %}
+            wardSelect.value = "{{ form.ward.value }}";
+        {% endif %}
     </script>
 {% endblock %}
