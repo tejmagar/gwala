@@ -4,19 +4,30 @@ from django.db import models
 # Create your models here.
 
 
-class Location(models.Model):
+class District(models.Model):
     name = models.CharField(max_length=60)
 
     def __str__(self):
         return self.name
 
 
+class LocalBody(models.Model):
+    name = models.CharField(max_length=60)
+    district = models.ForeignKey(to=District, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = 'Local bodies'
+
+    def __str__(self):
+        return f'{self.district.name} ==> {self.name}'
+
+
 class Ward(models.Model):
-    location = models.ForeignKey(to=Location, on_delete=models.DO_NOTHING)
+    local_body = models.ForeignKey(to=LocalBody, on_delete=models.DO_NOTHING)
     number = models.IntegerField()
 
     def __str__(self):
-        return f'{self.location.name} {self.number}'
+        return f'{self.local_body.district.name} ==> {self.local_body.name} ==> {self.number}'
 
 
 class Animal(models.Model):

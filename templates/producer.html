@@ -3,10 +3,17 @@
 
 {% block title %}
     <title>Gwala | Producer</title>
+    <style>
+        select {
+            border-right: 12px solid transparent; /* fixed dropdown right arrow padding */
+        }
+    </style>
+
+    <script src="https://unpkg.com/vue@next"></script>
 {% endblock %}
 
 {% block content %}
-    <div class="grid items-center justify-center h-screen">
+    <div class="grid items-center justify-center h-screen" id="app">
         <div class="p-4 rounded-xl text-sm">
             <form action="" class="min-w-[360px] flex bg-blue-100 items-center rounded-xl p-8">
                 <div class="w-1/2">
@@ -18,42 +25,126 @@
                         <input type="text" placeholder="First Name" class="block mb-4 w-1/2 mx-auto px-2 py-2 rounded">
                         <input type="text" placeholder="Last Name" class="block mb-4 w-1/2 mx-auto px-2 py-2 rounded">
                     </div>
+
                     <input type="text" placeholder="Contact number"
                            class="block mb-4 mt-2 w-full mx-auto px-2 py-2 rounded">
-                    {#                    <input type="text" placeholder="Address" class="block mb-4 my-2 w-full mx-auto px-2 py-2 rounded">#}
-                    <span class="text-slate-500">Address</span>
+
+                    <span class="text-slate-500 block mt-8">Address</span>
+
                     <div class="mb-4 flex gap-6">
-                        <div class="my-2 w-1/3 mx-auto px-2 py-2 rounded">
-                            {#                            <label for="address" class="mr-6 block">District</label>#}
-                            <select id="address" class="bg-white px-3 py-2 rounded-2xl">
-                                <option value="">District</option>
-                                <option>Jhapa</option>
+                        <div class="my-2">
+                            <select id="district" class="bg-white px-3 py-2 rounded-2xl" onchange="districtChanged()">
                             </select>
                         </div>
-                        <div class="my-2 w-1/3 mx-auto px-2 py-2 rounded">
-                            {#                            <label for="address" class="mr-6 block">District</label>#}
-                            <select id="address" class="bg-white px-3 py-2 rounded-2xl">
-                                <option value="">Local Body</option>
-                                <option>Jhapa</option>
+                        <div class="my-2">
+                            <select id="localBody" class="bg-white px-3 py-2 rounded-2xl" onchange="localBodyChanged()">
                             </select>
                         </div>
-                        <div class="my-2 w-1/3 mx-auto px-2 py-2 rounded">
-                            {#                            <label for="address" class="mr-6 block">District</label>#}
-                            <select id="address" class="bg-white px-3 py-2 rounded-2xl">
-                                <option value="">Ward No:</option>
-                                <option>Jhapa</option>
+                        <div class="my-2">
+                            <select id="ward" class="bg-white px-3 py-2 rounded-2xl" onchange="">
                             </select>
                         </div>
 
                     </div>
                     <input type="text" placeholder="Google Maps Location URL"
-                           class="block mb-4 w-full mx-auto px-2 py-2 rounded">
-                    <label>House Image</label>
-                    <button class="border border-dashed border-green-600 px-3 py-1 rounded-xl mb-3" >Upload</button>
+                           class="block mb-8 w-full mx-auto px-2 py-2 rounded">
 
-                    <button type="submit" class="block m bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Submit</button>
+                    <div>
+                        <label>House Image</label>
+                        <button class="ml-4 border border-dashed border-green-600 px-3 py-1 rounded-xl mb-3">Upload
+                        </button>
+                    </div>
+
+                    <button type="submit" class="block ml-auto bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Submit
+                    </button>
                 </div>
             </form>
         </div>
     </div>
+
+    <script>
+        let availableAddresses = {{ addresses|safe }};
+        const districts = availableAddresses['districts'];
+        let localBodies = [];
+        let wards = [];
+
+        const districtSelect = document.querySelector("#district");
+        const localBodySelect = document.querySelector("#localBody");
+        const wardSelect = document.querySelector("#ward");
+
+        /**
+         * Adds options to the select tag
+         * @param selectElement selectTag
+         * @param items Option items
+         * @param label_field field name to show value in list
+         * @param default_label eg: District
+         */
+        function addOptions(selectElement, items, label_field, default_label) {
+            // Construct html
+            let html = `<option>${default_label}</option>\n`;
+            items.forEach(item => {
+                html += `<option value="${item['id']}">${item[label_field]}</select>\n`;
+            })
+
+            // Replace inner html of current tag
+            selectElement.innerHTML = html;
+        }
+
+        addOptions(districtSelect, availableAddresses['districts'], 'name', 'District');
+
+        function getItemById(items, id) {
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item['id'] === id) {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        function districtChanged() {
+            // Check if the selected value is valid id number in string format
+            if (isNaN(districtSelect.value)) {
+                // Clear local bodies array when none is selected
+                localBodies = [];
+            } else {
+                const selectedDistrict = getItemById(districts, parseInt(districtSelect.value));
+                if (selectedDistrict) {
+                    localBodies = selectedDistrict['local_bodies'];
+                }
+            }
+
+            refreshLocalBodies();
+        }
+
+
+        function localBodyChanged() {
+            // Make sure selected value is id number
+            if (isNaN(localBodySelect.value)) {
+                // Clear wards array when none is selected
+                wards = []
+            } else {
+                const localBody = getItemById(localBodies, parseInt(localBodySelect.value))
+                if (localBody) {
+                    wards = localBody['wards']
+                }
+            }
+
+            refreshWards();
+        }
+
+
+        function refreshLocalBodies() {
+            addOptions(localBodySelect, localBodies, 'name', 'Local Body');
+            refreshWards();
+        }
+
+        function refreshWards() {
+            addOptions(wardSelect, wards, 'number', 'Ward');
+        }
+
+        refreshLocalBodies();
+        refreshWards();
+    </script>
 {% endblock %}
