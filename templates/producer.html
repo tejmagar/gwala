@@ -79,7 +79,7 @@
 
                         <div class="flex gap-4">
                             <div class="w-1/2 mb-4">
-                                <input name="first_name" aria-label="नाम" type="text" placeholder="First Nae"
+                                <input name="first_name" aria-label="नाम" type="text" placeholder="नाम"
                                        class="block w-full mb-2 mx-auto px-2 py-2 rounded"
                                         {% if form.first_name.value %}
                                        value="{{ form.first_name.value }}"
@@ -108,7 +108,7 @@
                             <input name="contact_number" aria-label="सम्पर्क नम्बर"
                                    type="number"
                                    maxlength="10"
-                                   placeholder="Contact number"
+                                   placeholder="सम्पर्क नम्बर"
                                    class="block mb-2 mt-2 w-full mx-auto px-2 py-2 rounded"
                                     {% if form.contact_number.value %}
                                    value="{{ form.contact_number.value }}"
@@ -155,7 +155,7 @@
                         </div>
 
                         <div>
-                            <label>House Image</label>
+                            <label>घरको तस्बिर</label>
                             <input type="file" accept="image/*" name="house_photo" id="housePhoto"
                                    aria-label="घरको तस्बिर"
                                    class="hidden"
