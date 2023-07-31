@@ -13,16 +13,17 @@
 {% endblock %}
 
 {% block content %}
-    <div class="grid items-center justify-center h-screen">
-        <div class="p-4 rounded-xl text-sm">
-            <form action="" class="min-w-[360px] flex bg-blue-100 items-center rounded-xl p-8" method="POST">
+    <div class="grid items-center h-screen">
+        <div class="p-4 md:p-8 rounded-xl text-sm">
+            <form action="" class="block md:flex w-[100%] bg-blue-100 items-center rounded-xl p-8" method="POST"
+                  enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <div class="w-1/2">
+                <div class="hidden w-1/2 md:block">
                     <img alt="Milking man" src="{% static 'images/milking-man.webp' %}">
                 </div>
 
-                <div class="w-1/2 bg-gray-50 p-8 rounded-xl">
+                <div class="md:w-1/2 bg-gray-50 p-8 rounded-xl">
                     {% if request.GET.next_form %}
                         <h1 class="underline font-medium underline-offset-4">Additional information</h1>
 
@@ -32,7 +33,7 @@
                         </div>
 
                         <div class="mt-8">
-                            <label class="block">How much litre you want to sell?</label>
+                            <label class="block">How much litre you want to {{ trade_type }}?</label>
 
                             <div class="mt-2">
                                 <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="eg: 1"
@@ -49,7 +50,7 @@
                         </div>
 
                         <div class="mt-8">
-                            <label class="block">Rate per litre</label>
+                            <label class="block">Rate per litre (In Rupees)</label>
                             <input name="rate_per_litre" aria-label="Rate" type="number" placeholder="eg: 1"
                                    class="w-full mt-2 block mx-auto px-2 py-2 rounded"
                                     {% if form.rate_per_litre.value %}
@@ -63,10 +64,18 @@
                         </div>
 
                         <div class="text-right mt-8">
-                            <button type="submit" class="bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Submit</button>
+                            <a href="{{ request.path }}" class="inline-block text-blue-600">Back</a>
+                            <button type="submit" class="ml-4 bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Submit
+                            </button>
                         </div>
                     {% else %}
-                        <h1 class="font-medium mb-4">Fill the form</h1>
+                        <h1 class="font-medium mb-4">
+                            {% if form.first_name.value %}
+                                Edit the form
+                            {% else %}
+                                Fill the form
+                            {% endif %}
+                        </h1>
 
                         <div class="flex gap-4">
                             <div class="w-1/2 mb-4">
@@ -96,7 +105,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <input name="contact_number" aria-label="contactNumber" type="text"
+                            <input name="contact_number" pattern="^(?:\s?|-)?\d{2,3}(?:\s?|-)?\d{7}$" aria-label="contactNumber" type="text"
                                    placeholder="Contact number"
                                    class="block mb-2 mt-2 w-full mx-auto px-2 py-2 rounded"
                                     {% if form.contact_number.value %}
@@ -110,7 +119,7 @@
 
                         <span class="text-slate-500 block mt-8">Address</span>
 
-                        <div class="mb-4 flex gap-6">
+                        <div class="mb-4 flex flex-wrap gap-x-6">
                             <div class="my-2">
                                 <select name="district" aria-label="district" id="district" required
                                         class="bg-white px-3 py-2 rounded-2xl {% if form.errors.district %}outline outline-1 outline-red-500{% endif %}"
@@ -145,12 +154,29 @@
 
                         <div>
                             <label>House Image</label>
-                            <button class="ml-4 border border-dashed border-green-600 px-3 py-1 rounded-xl mb-3">Upload
+                            <input type="file" accept="image/*" name="house_photo" id="housePhoto"
+                                   aria-label="housePhoto"
+                                   class="hidden"
+                                   onchange="document.querySelector('#housePhotoBtn').innerHTML='Uploaded'; document.querySelector('#uploadedLink').style.display='none'">
+                            <button id="housePhotoBtn" type="button"
+                                    onclick="document.querySelector('#housePhoto').click()"
+                                    class="ml-4 border border-dashed border-green-600 px-3 py-1 rounded-xl mb-3">Upload
                             </button>
+
+                            {% if form.house_photo.value %}
+                                <a id="uploadedLink" class="ml-4 text-blue-500"
+                                   href="{{ form.instance.house_photo.url }}">See uploaded</a>
+                            {% endif %}
+
+                            {% if form.errors.house_photo %}
+                                <span class="block mt-1 text-[12px] text-red-500">{{ form.errors.house_photo }}</span>
+                            {% endif %}
                         </div>
 
                         <div class="text-right">
-                            <button type="submit" class="bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Next</button>
+                            <a href="../" class="inline-block text-blue-600">Back</a>
+                            <button type="submit" class="ml-4 bg-blue-500 px-4 py-2 text-gray-100 rounded-xl">Next
+                            </button>
                         </div>
                     {% endif %}
                 </div>

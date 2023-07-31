@@ -1,13 +1,30 @@
-from django.urls import reverse
+from typing import Optional
+from abc import ABC
+
+from django.db.models import QuerySet
+from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.shortcuts import render, redirect
 
-from .models import Producer, District, LocalBody, Ward, Animal
-from .forms import ProducerForm, AdditionalProducerForm
+from .models import TradeType, MilkTrade, District, LocalBody, Ward, Animal
+from .forms import MilkTradeForm, AdditionalMilkTradeForm
 from .utils import create_address_json
 
 
 # Create your views here.
+
+
+def get_user_producer_model(session, session_key):
+    model_pk: int = session.get(session_key)
+    if not model_pk:
+        return None
+
+    try:
+        return MilkTrade.objects.get(pk=model_pk)
+    except MilkTrade.DoesNotExist:
+        del model_pk
+
+    return None
 
 
 class HomeView(View):
@@ -15,29 +32,35 @@ class HomeView(View):
         return render(request, 'index.html')
 
 
-class ProducerView(View):
+class SuccessView(View):
+    def get(self, request):
+        return render(request, 'success.html')
 
-    def get_user_producer_model(self, session):
-        producer_model_pk = session.get('producer_model_pk')
-        if not producer_model_pk:
-            return None
 
-        try:
-            return Producer.objects.get(pk=producer_model_pk)
-        except Producer.DoesNotExist:
-            del producer_model_pk
+class TradeRequestView(View, ABC):
+    model_session_key: Optional[str] = None
+    form_fill_url: Optional[str] = None
+    trade_type: Optional[TradeType] = None
 
-        return None
+    def validate_fields(self):
+        if not self.model_session_key:
+            raise Exception('Please provide model session key')
 
-    def get_initials_form(self, producer_model):
-        districts = District.objects.filter(name=producer_model.district, localbody__name=producer_model.local_body,
-                                            localbody__ward__number=producer_model.ward)
+        if not self.form_fill_url:
+            raise Exception('Please provide a form fill url')
 
-        local_bodies = LocalBody.objects.filter(district__name=producer_model.district,
-                                                name=producer_model.local_body)
+        if not self.trade_type:
+            raise Exception('Please specify trade type')
 
-        wards = Ward.objects.filter(number=producer_model.ward, local_body__name=producer_model.local_body,
-                                    local_body__district__name=producer_model.district)
+    def get_initials_form(self, trade_model) -> dict[str, QuerySet]:
+        districts: QuerySet = District.objects.filter(name=trade_model.district, localbody__name=trade_model.local_body,
+                                                      localbody__ward__number=trade_model.ward)
+
+        local_bodies: QuerySet = LocalBody.objects.filter(district__name=trade_model.district,
+                                                          name=trade_model.local_body)
+
+        wards: QuerySet = Ward.objects.filter(number=trade_model.ward, local_body__name=trade_model.local_body,
+                                              local_body__district__name=trade_model.district)
 
         if districts.count() > 0 or local_bodies.count() > 0 or wards.count() > 0:
             return {
@@ -50,11 +73,11 @@ class ProducerView(View):
 
     def get(self, request):
         next_form = request.GET.get('next_form', 'false')
-        user_producer_model = self.get_user_producer_model(request.session)
+        user_producer_model = get_user_producer_model(request.session, self.model_session_key)
 
         if next_form == 'true' and not user_producer_model:
-            # Producer model don't exist, so ask user to again fill the form from first
-            return redirect(reverse('producer'))
+            # model don't exist, so ask user to again fill the form from first
+            return redirect(self.form_fill_url)
 
         # User has previously submitted form and its instance exists in database
         if user_producer_model:
@@ -65,56 +88,72 @@ class ProducerView(View):
                 if cows.count() > 0:
                     initial['milk_source'] = cows.first()
 
-                form = AdditionalProducerForm(instance=user_producer_model, initial=initial)
+                form = AdditionalMilkTradeForm(instance=user_producer_model, initial=initial)
             else:
-                form = ProducerForm(instance=user_producer_model, initial=self.get_initials_form(user_producer_model))
+                form = MilkTradeForm(instance=user_producer_model, initial=self.get_initials_form(user_producer_model))
 
         else:
-            form = ProducerForm()
+            form = MilkTradeForm()
 
         addresses = create_address_json()
 
         return render(request, 'producer.html', {
             'form': form,
-            'addresses': addresses
+            'addresses': addresses,
+            'trade_type': self.trade_type
         })
 
     def post(self, request):
-        next_form = request.GET.get('next_form', 'false')  # toggles form
-        user_producer_model = self.get_user_producer_model(request.session)
+        next_form: str = request.GET.get('next_form', 'false')  # toggles form
+        model = get_user_producer_model(request.session, self.model_session_key)
 
-        if user_producer_model and next_form == 'true':
-            form = AdditionalProducerForm(data=request.POST, instance=user_producer_model)
+        if model and next_form == 'true':
+            form = AdditionalMilkTradeForm(data=request.POST, instance=model)
 
         else:
-            if user_producer_model:
-                form = ProducerForm(data=request.POST, files=request.FILES, instance=user_producer_model)
+            if model:
+                form = MilkTradeForm(data=request.POST, files=request.FILES, instance=model)
             else:
-                form = ProducerForm(data=request.POST, files=request.FILES)
+                form = MilkTradeForm(data=request.POST, files=request.FILES)
 
         if form.is_valid():
             model = form.save(commit=False)
+            model.trade_type = self.trade_type
 
             # Copy address from form to model
-            if type(form) == ProducerForm:
+            if type(form) == MilkTradeForm:
                 # In the future, available address may be changed or removed, so instead we copy data
                 model.district = form.cleaned_data['district'].name
                 model.local_body = form.cleaned_data['local_body'].name
                 model.ward = form.cleaned_data['ward'].number
+
                 model.save()
 
                 # Store user model to session
-                request.session['producer_model_pk'] = model.pk
-                return redirect(f'{reverse("producer")}?next_form=true')
+                request.session[self.model_session_key] = model.pk
+                return redirect(f'{self.form_fill_url}?next_form=true')
 
             else:
                 model.save()
                 # Form submitted successfully, so redirect to success message page
-                return redirect(request.path)
+                return redirect(reverse('success'))
 
         addresses = create_address_json()
 
         return render(request, 'producer.html', {
             'form': form,
-            'addresses': addresses
+            'addresses': addresses,
+            'trade_type': self.trade_type
         })
+
+
+class ProducerView(TradeRequestView):
+    model_session_key = 'producer_trade_pk'
+    trade_type = TradeType.SELL
+    form_fill_url = reverse_lazy('producer')
+
+
+class ConsumerView(TradeRequestView):
+    model_session_key = 'consumer_trade_pk'
+    form_fill_url = reverse_lazy('consumer')
+    trade_type = TradeType.BUY

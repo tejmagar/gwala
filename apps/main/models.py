@@ -44,7 +44,12 @@ class Status(models.TextChoices):
     REJECTED = 'rejected'
 
 
-class Producer(models.Model):
+class TradeType(models.TextChoices):
+    BUY = 'buy'
+    SELL = 'sell'
+
+
+class MilkTrade(models.Model):
     # Primary fields
     first_name = models.CharField(max_length=60)
     last_name = models.CharField(max_length=60)
@@ -53,7 +58,7 @@ class Producer(models.Model):
     local_body = models.CharField(max_length=100)
     ward = models.IntegerField()
     google_map_location = models.URLField(null=True, blank=True)
-    house_photo = models.ImageField(upload_to='uploads/', null=True, blank=True)
+    house_photo = models.ImageField(upload_to='uploads/')
 
     # Additional fields
     milk_source = models.ForeignKey(to=Animal, on_delete=models.DO_NOTHING, null=True, blank=True)
@@ -61,6 +66,7 @@ class Producer(models.Model):
     rate_per_litre = models.IntegerField(help_text='In rupees', null=True, blank=True)
 
     # Status
+    trade_type = models.CharField(max_length=20, choices=TradeType.choices)
     status = models.CharField(max_length=60, choices=Status.choices, default=Status.NONE)
 
     def __str__(self):

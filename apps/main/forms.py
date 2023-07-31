@@ -1,13 +1,18 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import District, LocalBody, Ward, Producer, Animal
+from .models import District, LocalBody, Ward, MilkTrade, Animal
 
 
-class ProducerForm(forms.ModelForm):
+class MilkTradeForm(forms.ModelForm):
     district = forms.ModelChoiceField(queryset=District.objects.get_queryset())
     local_body = forms.ModelChoiceField(queryset=LocalBody.objects.get_queryset())
     ward = forms.ModelChoiceField(queryset=Ward.objects.get_queryset())
+    house_photo = forms.ImageField()
+
+    class Meta:
+        model = MilkTrade
+        fields = ('first_name', 'last_name', 'contact_number', 'google_map_location', 'house_photo')
 
     def clean_local_body(self):
         """
@@ -35,16 +40,12 @@ class ProducerForm(forms.ModelForm):
 
         return ward
 
-    class Meta:
-        model = Producer
-        fields = ('first_name', 'last_name', 'contact_number', 'google_map_location')
 
-
-class AdditionalProducerForm(forms.ModelForm):
+class AdditionalMilkTradeForm(forms.ModelForm):
     milk_source = forms.ModelChoiceField(queryset=Animal.objects.get_queryset(), required=True)
     litre_to_sell = forms.IntegerField(required=True)
     rate_per_litre = forms.IntegerField(required=True)
 
     class Meta:
-        model = Producer
+        model = MilkTrade
         fields = ('milk_source', 'litre_to_sell', 'rate_per_litre')
