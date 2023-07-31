@@ -36,7 +36,7 @@
                             <label class="block">कति लिटर दुध {% if trade_type == 'buy' %} किन्न {% else %} बेच्न  {% endif %} चाहानुहुन्छ?</label>
 
                             <div class="mt-2">
-                                <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="{% if trade_type == 'buy' %} जस्तै: ९० {% else %} जस्तै: ३ {% endif %}"
+                                <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="{% if trade_type == 'buy' %} जस्तै: ९० {% else %} जस्तै: २ {% endif %}"
                                        class="w-full block mx-auto px-2 py-2 rounded"
                                         {% if form.litre_to_sell.value %}
                                        value="{{ form.litre_to_sell.value }}"
