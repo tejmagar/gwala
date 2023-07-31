@@ -105,7 +105,9 @@
                         </div>
 
                         <div class="mb-4">
-                            <input name="contact_number" pattern="^(?:\s?|-)?\d{2,3}(?:\s?|-)?\d{7}$" aria-label="contactNumber" type="text"
+                            <input name="contact_number" aria-label="contactNumber"
+                                   type="number"
+                                   maxlength="10"
                                    placeholder="Contact number"
                                    class="block mb-2 mt-2 w-full mx-auto px-2 py-2 rounded"
                                     {% if form.contact_number.value %}
