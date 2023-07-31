@@ -25,15 +25,15 @@
 
                 <div class="md:w-1/2 bg-gray-50 p-8 rounded-xl">
                     {% if request.GET.next_form %}
-                        <h1 class="underline font-medium underline-offset-4">Additional information</h1>
+                        <h1 class="underline font-medium underline-offset-4">थप जानकारी</h1>
 
                         <div class="flex gap-4 mt-8">
-                            <label>Milk source</label>
+                            <label>दुधको श्रोत</label>
                             {{ form.milk_source }}
                         </div>
 
                         <div class="mt-8">
-                            <label class="block">How much litre you want to {{ trade_type }}?</label>
+                            <label class="block">कति लिटर दुध बेच्न चाहानुहुन्छ? {{ trade_type }}?</label>
 
                             <div class="mt-2">
                                 <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="eg: 5"
@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="mt-8">
-                            <label class="block">Rate per litre (In Rupees)</label>
+                            <label class="block">दर प्रति लिटर (रू)</label>
                             <input name="rate_per_litre" aria-label="Rate" type="number" placeholder="eg: 75"
                                    class="w-full mt-2 block mx-auto px-2 py-2 rounded"
                                     {% if form.rate_per_litre.value %}
@@ -73,13 +73,13 @@
                             {% if form.first_name.value %}
                                 Edit the form
                             {% else %}
-                                Fill the form
+                                कृपया फर्म भर्नुहोस्
                             {% endif %}
                         </h1>
 
                         <div class="flex gap-4">
                             <div class="w-1/2 mb-4">
-                                <input name="first_name" aria-label="firstName" type="text" placeholder="First Name"
+                                <input name="first_name" aria-label="नाम" type="text" placeholder="First Name"
                                        class="block w-full mb-2 mx-auto px-2 py-2 rounded"
                                         {% if form.first_name.value %}
                                        value="{{ form.first_name.value }}"
@@ -91,7 +91,7 @@
                             </div>
 
                             <div class="w-1/2">
-                                <input name="last_name" aria-label="lastName" type="text" placeholder="Last Name"
+                                <input name="last_name" aria-label="lastName" type="text" placeholder="थर"
                                        class="block w-full mb-2 mx-auto px-2 py-2 rounded"
                                         {% if form.last_name.value %}
                                        value="{{ form.last_name.value }}"
@@ -105,7 +105,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <input name="contact_number" aria-label="contactNumber"
+                            <input name="contact_number" aria-label="सम्पर्क नम्बर"
                                    type="number"
                                    maxlength="10"
                                    placeholder="Contact number"
@@ -119,7 +119,7 @@
                             {% endif %}
                         </div>
 
-                        <span class="text-slate-500 block mt-8">Address</span>
+                        <span class="text-slate-500 block mt-8">ठेगाना</span>
 
                         <div class="mb-4 flex flex-wrap gap-x-6">
                             <div class="my-2">
@@ -144,7 +144,7 @@
 
                         <div class="mb-8">
                             <input name="google_map_location" aria-label="googleMapLocation" type="text"
-                                   placeholder="Google Maps Location URL"
+                                   placeholder="गुगल म्यापको ठेगाना"
                                    class="block w-full mx-auto px-2 py-2 rounded"
                                     {% if form.google_map_location.value %}
                                    value="{{ form.google_map_location.value }}"
@@ -157,7 +157,7 @@
                         <div>
                             <label>House Image</label>
                             <input type="file" accept="image/*" name="house_photo" id="housePhoto"
-                                   aria-label="housePhoto"
+                                   aria-label="घरको तस्बिर"
                                    class="hidden"
                                    onchange="document.querySelector('#housePhotoBtn').innerHTML='Uploaded'; document.querySelector('#uploadedLink').style.display='none'">
                             <button id="housePhotoBtn" type="button"
@@ -258,15 +258,15 @@
 
 
         function refreshLocalBodies() {
-            addOptions(localBodySelect, localBodies, 'name', 'Local Body');
+            addOptions(localBodySelect, localBodies, 'name', 'पालिका');
             refreshWards();
         }
 
         function refreshWards() {
-            addOptions(wardSelect, wards, 'number', 'Ward');
+            addOptions(wardSelect, wards, 'number', 'वडा');
         }
 
-        addOptions(districtSelect, availableAddresses['districts'], 'name', 'District');
+        addOptions(districtSelect, availableAddresses['districts'], 'name', 'जिल्ला');
         refreshLocalBodies();
         refreshWards();
 
