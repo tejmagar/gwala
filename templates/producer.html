@@ -36,7 +36,7 @@
                             <label class="block">कति लिटर दुध बेच्न चाहानुहुन्छ? {{ trade_type }}?</label>
 
                             <div class="mt-2">
-                                <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="eg: 5"
+                                <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="जस्तै: ५"
                                        class="w-full block mx-auto px-2 py-2 rounded"
                                         {% if form.litre_to_sell.value %}
                                        value="{{ form.litre_to_sell.value }}"
@@ -51,7 +51,7 @@
 
                         <div class="mt-8">
                             <label class="block">दर प्रति लिटर (रू)</label>
-                            <input name="rate_per_litre" aria-label="Rate" type="number" placeholder="eg: 75"
+                            <input name="rate_per_litre" aria-label="Rate" type="number" placeholder="जस्तै: ८५"
                                    class="w-full mt-2 block mx-auto px-2 py-2 rounded"
                                     {% if form.rate_per_litre.value %}
                                    value="{{ form.rate_per_litre.value }}"
@@ -71,7 +71,7 @@
                     {% else %}
                         <h1 class="font-medium mb-4">
                             {% if form.first_name.value %}
-                                Edit the form
+                                कृपया फर्म भर्नुहाेस्  done
                             {% else %}
                                 कृपया फर्म भर्नुहोस्
                             {% endif %}
@@ -79,7 +79,7 @@
 
                         <div class="flex gap-4">
                             <div class="w-1/2 mb-4">
-                                <input name="first_name" aria-label="नाम" type="text" placeholder="First Name"
+                                <input name="first_name" aria-label="नाम" type="text" placeholder="First Nae"
                                        class="block w-full mb-2 mx-auto px-2 py-2 rounded"
                                         {% if form.first_name.value %}
                                        value="{{ form.first_name.value }}"
