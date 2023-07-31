@@ -36,7 +36,7 @@
                             <label class="block">कति लिटर दुध {% if trade_type == 'buy' %} किन्न {% else %} बेच्न  {% endif %} चाहानुहुन्छ?</label>
 
                             <div class="mt-2">
-                                <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="{% if trade_type == 'buy' %} जस्तै: ३ {% else %} जस्तै: ५० {% endif %}"
+                                <input name="litre_to_sell" aria-label="Litres" type="number" placeholder="{% if trade_type == 'buy' %} जस्तै: ९० {% else %} जस्तै: ३ {% endif %}"
                                        class="w-full block mx-auto px-2 py-2 rounded"
                                         {% if form.litre_to_sell.value %}
                                        value="{{ form.litre_to_sell.value }}"
@@ -51,7 +51,7 @@
 
                         <div class="mt-8">
                             <label class="block">दर प्रति लिटर (रू)</label>
-                            <input name="rate_per_litre" aria-label="Rate" type="number" placeholder="{% if trade_type == 'buy' %} जस्तै: ३ {% else %} जस्तै: ९० {% endif %}"
+                            <input name="rate_per_litre" aria-label="Rate" type="number" placeholder="{% if trade_type == 'buy' %} जस्तै: ३ {% else %} जस्तै: ५० {% endif %}"
                                    class="w-full mt-2 block mx-auto px-2 py-2 rounded"
                                     {% if form.rate_per_litre.value %}
                                    value="{{ form.rate_per_litre.value }}"
